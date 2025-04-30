@@ -1,0 +1,243 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+   
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Air Quality Analyzer - Monitor the air quality in your area in real-time">
+    <meta name="keywords" content="Air Quality, AQI, Environment, Pollution, Real-time Data">
+    <meta name="author" content="Echelon X">
+    <title>Air Quality Analyzer</title>
+    <link rel="icon" href="src/main_icon.svg" type="image/svg+xml">
+
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="container">
+        <!-- Theme Toggle -->
+        <div class="theme-toggle">
+            <button id="theme-toggle-btn" aria-label="Toggle dark/light mode">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+
+        <!-- Notification Container -->
+        <div id="notification-container"></div>
+
+        <!-- Loading Screen -->
+        <div class="screen" id="load" style="display: flex; visibility: visible; opacity: 1;">
+            <div class="load-content">
+                <h1><i class="fas fa-wind pulse"></i> Air Quality Analyzer</h1>
+                <p>Welcome to the Air Quality Analyzer. Stay informed about the air quality in your area with real-time data and personalized insights.</p>
+                <noscript>
+                    <p class="error-message"><i class="fas fa-exclamation-triangle"></i> JavaScript is required for this application to function properly. Please enable JavaScript in your browser.</p>
+                </noscript>
+                
+                <div class="loading-indicator">
+                    <p><i class="fas fa-sync fa-spin"></i> Loading air quality data...</p>
+                    <div class="progress-bar" role="progressbar" aria-label="Loading progress"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Home Screen -->
+        <div class="screen" id="home">
+            <div class="header">
+                <h1><i class="fas fa-wind"></i> Air Quality Analyzer</h1>
+            </div>
+            
+            <div class="aqi-display">
+                <div class="aqi-card">
+                    <p id="aqi" class="aqi" aria-live="polite">Fetching AQI information...</p>
+                    <p id="location" class="location" aria-live="polite">Fetching location...</p>
+                    <p id="last-updated" class="last-updated">Last updated: <span id="update-time">--</span></p>
+                </div>
+            </div>
+            
+            <!-- Location Search Feature -->
+            <div class="search-container">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search search-icon"></i>
+                    <input type="text" id="location-search" placeholder="Search location (city, country)" aria-label="Search for a location">
+                </div>
+                <button id="search-btn" aria-label="Search"><i class="fas fa-search"></i></button>
+                <button id="current-location-btn" aria-label="Use current location"><i class="fas fa-map-marker-alt"></i></button>
+            </div>
+            
+            <div class="nav-buttons">
+                <button class="feature-btn" id="analysis-btn" aria-label="Go to AI Analysis screen">
+                    <i class="fas fa-brain"></i> Analysis
+                </button>
+                <button class="feature-btn" id="forecast-btn" aria-label="Go to Forecast screen">
+                    <i class="fas fa-calendar-alt"></i> Forecast
+                </button>
+                <button class="feature-btn" id="compare-btn" aria-label="Go to Comparison screen">
+                    <i class="fas fa-balance-scale"></i> Compare
+                </button>
+            </div>
+
+            <div id="widget" class="data-widget">
+                <h2><i class="fas fa-chart-line"></i> Air Quality Data</h2>
+                <div class="pollutants-grid" id="pollutants-data">
+                    <!-- Pollutant data will be inserted here by JavaScript -->
+                </div>
+                <div class="chart-container" id="data-container">
+                    <canvas id="aqi-chart" width="400" height="280" aria-label="Air Quality Index Chart"></canvas>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Analysis Screen -->
+        <div class="screen" id="analysis">
+            <div class="screen-header">
+                <h2><i class="fas fa-brain"></i> AI Analysis</h2>
+                <button class="back-btn" id="analysis-back-btn" aria-label="Go back to the home screen">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="ai-content">
+                <div class="ai-box" id="ai-analysis" aria-live="polite">
+                    <div class="ai-thinking">
+                        <i class="fas fa-spinner fa-pulse"></i> Analyzing air quality data...
+                    </div>
+                </div>
+                
+                <div class="health-recommendations">
+                    <h3><i class="fas fa-heartbeat"></i> Health Recommendations</h3>
+                    <div id="health-advice" class="health-advice">
+                        <!-- Health recommendations will be inserted here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Forecast Screen -->
+        <div class="screen" id="forecast">
+            <div class="screen-header">
+                <h2><i class="fas fa-calendar-alt"></i> Air Quality Forecast</h2>
+                <button class="back-btn" id="forecast-back-btn" aria-label="Go back to the home screen">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="forecast-container">
+                <div class="forecast-days" id="forecast-data">
+                    <!-- Forecast data will be inserted here by JavaScript -->
+                </div>
+                <div class="chart-container">
+                    <canvas id="forecast-chart" width="400" height="280" aria-label="Air Quality Forecast Chart"></canvas>
+                </div>
+                <div class="forecast-legend" id="forecast-legend">
+                    <!-- Legend will be inserted here by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Compare Screen -->
+        <div class="screen" id="compare">
+            <div class="screen-header">
+                <h2><i class="fas fa-balance-scale"></i> Compare Air Quality</h2>
+                <button class="back-btn" id="compare-back-btn" aria-label="Go back to the home screen">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="compare-form">
+                <div class="compare-inputs">
+                    <div class="compare-input-group">
+                        <label for="location1">Location 1</label>
+                        <input type="text" id="location1" placeholder="Enter city name" aria-label="First location to compare">
+                    </div>
+                    <div class="compare-input-group">
+                        <label for="location2">Location 2</label>
+                        <input type="text" id="location2" placeholder="Enter city name" aria-label="Second location to compare">
+                    </div>
+                </div>
+                <button id="compare-locations-btn">
+                    <i class="fas fa-sync-alt"></i> Compare
+                </button>
+            </div>
+            
+            <div id="comparison-results" class="comparison-results" style="display: none;">
+                <h3>Comparison Results</h3>
+                <div class="comparison-table">
+                    <!-- Comparison data will be inserted here by JavaScript -->
+                </div>
+            </div>
+            
+            <div class="chart-container">
+                <canvas id="compare-chart" width="400" height="280" aria-label="Air Quality Comparison Chart"></canvas>
+            </div>
+        </div>
+        
+        <!-- Settings Screen -->
+        <div class="screen" id="settings">
+            <div class="screen-header">
+                <h2><i class="fas fa-cog"></i> Settings</h2>
+                <button class="back-btn" id="settings-back-btn" aria-label="Go back to the home screen">
+                    <i class="fas fa-arrow-left"></i>
+                </button>
+            </div>
+            
+            <div class="settings-container">
+                <div class="settings-group">
+                    <h3>Display Settings</h3>
+                    <div class="setting-item">
+                        <label for="theme-select">Theme</label>
+                        <div class="setting-control">
+                            <button id="theme-select" class="setting-btn">
+                                <i class="fas fa-moon"></i> Dark Theme
+                            </button>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="units-select">Units</label>
+                        <div class="setting-control">
+                            <select id="units-select" class="setting-select">
+                                <option value="metric">Metric (°C, km/h)</option>
+                                <option value="imperial">Imperial (°F, mph)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Notification Settings</h3>
+                    <div class="setting-item">
+                        <label for="notifications-toggle">Enable Notifications</label>
+                        <div class="setting-control">
+                            <label class="toggle">
+                                <input type="checkbox" id="notifications-toggle">
+                                <span class="toggle-slider"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="alert-threshold">Alert Threshold (AQI)</label>
+                        <div class="setting-control">
+                            <input type="number" id="alert-threshold" min="0" max="500" value="100" class="setting-input">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>About</h3>
+                    <div class="about-info">
+                        <p>Air Quality Analyzer v1.0</p>
+                        <p>Data provided by <a href="https://aqicn.org/" target="_blank" rel="noopener">WAQI</a></p>
+                        <p>Created by Your Name</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
